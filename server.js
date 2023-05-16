@@ -14,8 +14,7 @@ app.use(express.json());
 const authRouter = require('./routes/auth');
 const productsRouter = require('./routes/products');
 
-app.use('/api/auth', authRouter.router);
-app.use(authRouter.isAuthenticated);
+app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 
 app.listen(5500, () => console.log('Server started'));

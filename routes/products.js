@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productSchema = require('../models/product');
+const auth = require('../helper/authMiddleware');
 
 const getProduct = async (req, res, next) => {
 	let product;
@@ -16,7 +17,7 @@ const getProduct = async (req, res, next) => {
 	next();
 };
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
 	try {
 		const products = await productSchema.find();
 		res.status(200).json(products);
@@ -24,11 +25,11 @@ router.get('/', async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 });
-router.get('/:id', getProduct, (req, res) => {
+router.get('/:id', auth, getProduct, (req, res) => {
 	res.status(200).json(res.product);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 	const newProduct = new productSchema({
 		name: req.body.name,
 		description: req.body.description,
@@ -45,7 +46,7 @@ router.post('/', async (req, res) => {
 	}
 });
 
-router.patch('/:id', getProduct, async (req, res) => {
+router.patch('/:id', auth, getProduct, async (req, res) => {
 	res.product = { ...res.product, ...req.body, createdAt: Date.now() };
 
 	try {
@@ -56,7 +57,7 @@ router.patch('/:id', getProduct, async (req, res) => {
 	}
 });
 
-router.delete('/:id', getProduct, async (req, res) => {
+router.delete('/:id', auth, getProduct, async (req, res) => {
 	try {
 		await res.product.remove();
 		res.json({ message: 'Product deleted successfully' });
